@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras import datasets, layers, models
+import os
 
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 def get_datasets(name):
     if name == "fashion_mnist":
@@ -56,10 +58,73 @@ def init_model_1(verbose=0):
         model.summary()
     return model
 
+def init_model_3(verbose=0):
+    model = models.Sequential()
+    model.add(layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(layers.Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(layers.Conv2D(filters=16, kernel_size=(3, 3), activation='relu'))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dense(10, activation='softmax'))
+
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+    if verbose == 1:
+        model.summary()
+    return model
+
+def init_model_4(verbose=0):
+    model = models.Sequential()
+    model.add(layers.Conv2D(filters=64, kernel_size=(3, 3), input_shape=(28, 28, 1)))
+    model.add(layers.LeakyReLU(alpha=0.3))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(layers.Conv2D(filters=32, kernel_size=(3, 3)))
+    model.add(layers.LeakyReLU(alpha=0.3))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(layers.Conv2D(filters=16, kernel_size=(3, 3)))
+    model.add(layers.LeakyReLU(alpha=0.3))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dense(10, activation='softmax'))
+
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+    if verbose == 1:
+        model.summary()
+    return model
+
+def init_model_5(verbose=0):
+    model = models.Sequential()
+    model.add(layers.Conv2D(filters=64, kernel_size=(5, 5), activation='relu', input_shape=(28, 28, 1)))
+    model.add(tf.keras.layers.Dropout(0.3))
+    model.add(layers.Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
+    model.add(tf.keras.layers.Dropout(0.3))
+    model.add(layers.Conv2D(filters=16, kernel_size=(5, 5), activation='relu'))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dense(10, activation='softmax'))
+
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+    if verbose == 1:
+        model.summary()
+    return model
+
 
 def plot_training_loss(model, history, test_images, test_labels):
     plt.plot(history.history['accuracy'], label='accuracy')
-    plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
+    plt.plot(history.history['val_accuracy'], label='val_accuracy')
     plt.xlabel('Epoch')
     plt.ylabel('Accuracy')
     plt.ylim([0.5, 1])
@@ -76,24 +141,27 @@ def main():
     (valid_images, valid_labels) = data[1]
     (test_images, test_labels) = data[2]
 
-
-
-
-
-
     # model = init_model_example()
-    model = init_model_1()
+    # model = init_model_1()
+    model = init_model_3()
+    # model = init_model_4()
+    # model = init_model_5()
 
-    history = model.fit(train_images, 
+    # We moeten eerst alleen evaluaten met de validation data en niet de test data.
+    # dus het is niet de bedoeling dat we model evaluate met test data doen toch?
+    history = model.fit(train_images,
                     train_labels,
-                    epochs=10,
-                    validation_data=(valid_images, valid_labels),
-                    verbose=2)
+                    batch_size=64,
+                    epochs=15,
+                    verbose=2,
+                    validation_data=(valid_images, valid_labels))
 
     plot_training_loss(model, history, test_images, test_labels)
 
-    # # model.save('Models/model_example')
-    # # model = tf.keras.models.load_model('Models/model_example')
+    # model.save('Models\\model_3')
+    # model.save('Models\\model_4')
+    # model.save('Models\\model_5')
+    # model = tf.keras.models.load_model('Models/model_example')
 
 
     # output = model.predict(test_images[:4])
