@@ -168,7 +168,21 @@ def training_stage():
     model.save('Training_Models\\model_5')
 
 def testing_stage():
-    i = 0
+    data = get_datasets("fashion_mnist_testing")
+    (train_images, train_labels) = data[0]
+    (test_images, test_labels) = data[1]
+
+    model = init_model_1()
+    history = get_history(model, test_images, test_labels, train_images, train_labels)
+    plot_testing_loss(history)
+    evalueate_test_data(model, test_images, test_labels)
+    model.save('Test_Models\\model_1')
+
+    model = init_model_3()
+    history = get_history(model, test_images, test_labels, train_images, train_labels)
+    plot_testing_loss(history)
+    evalueate_test_data(model, test_images, test_labels)
+    model.save('Test_Models\\model_3')
 
 def decay_rate(epoch, lr):
     decay_step = 5
@@ -178,7 +192,7 @@ def decay_rate(epoch, lr):
         return lr
 
 
-def get_history(model, valid_images, valid_labels, train_images, train_labels):
+def get_history(model, valid_test_images, valid_test_labels, train_images, train_labels):
     callback = tf.keras.callbacks.LearningRateScheduler(decay_rate, verbose=1)
     history = model.fit(train_images,
                         train_labels,
@@ -186,7 +200,7 @@ def get_history(model, valid_images, valid_labels, train_images, train_labels):
                         epochs=15,
                         callbacks=[callback],
                         verbose=2,
-                        validation_data=(valid_images, valid_labels))
+                        validation_data=(valid_test_images, valid_test_labels))
     return history
 
 def plot_training_loss(history):
@@ -196,7 +210,15 @@ def plot_training_loss(history):
     plt.ylabel('Log Loss')
     plt.ylim([0.4, 0.7])
     plt.legend(loc='upper right')
-    print(history.history)
+    plt.show()
+
+def plot_testing_loss(history):
+    plt.plot(np.log(history.history['loss']), label='training')
+    plt.plot(np.log(history.history['val_loss']), label='testing')
+    plt.xlabel('Epoch')
+    plt.ylabel('Log Loss')
+    plt.ylim([0.4, 0.7])
+    plt.legend(loc='upper right')
     plt.show()
 
 def evalueate_test_data(model, test_images, test_labels):
@@ -205,7 +227,8 @@ def evalueate_test_data(model, test_images, test_labels):
     print("test accuracy = ", test_acc)
 
 def main():
-    training_stage()
+    # training_stage()
+    testing_stage()
     # model = tf.keras.models.load_model('Models\\model_3')
 
 
