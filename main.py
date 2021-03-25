@@ -41,10 +41,32 @@ def init_model_example(verbose=0):
 
 def init_model_1(verbose=0):
     model = models.Sequential()
-    model.add(layers.Conv2D(filters=64, kernel_size=(3,3), activation='relu', input_shape=(28, 28, 1)))
-    model.add(layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(layers.Conv2D(filters=8, kernel_size=(3,3), activation='relu', input_shape=(28, 28, 1)))
+    model.add(layers.Conv2D(filters=64, kernel_size=(3,3), activation='relu'))
     model.add(layers.Conv2D(filters=32, kernel_size=(3,3), activation='relu'))
-    model.add(layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
+    model.add(layers.Conv2D(filters=16, kernel_size=(3,3), activation='relu'))
+    model.add(layers.Conv2D(filters=128, kernel_size=(3,3), activation='relu'))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dense(10, activation='softmax'))
+
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+    if verbose == 1:
+        model.summary()
+    return model
+
+
+def init_model_2(verbose=0):
+    model = models.Sequential()
+    model.add(layers.Conv2D(filters=8, kernel_size=(5,5), activation='relu', input_shape=(28, 28, 1)))
+    model.add(layers.Conv2D(filters=64, kernel_size=(5,5), activation='relu'))
+    model.add(layers.Conv2D(filters=32, kernel_size=(5,5), activation='relu'))
+    model.add(layers.Conv2D(filters=16, kernel_size=(5,5), activation='relu'))
+    model.add(layers.Conv2D(filters=128, kernel_size=(5,5), activation='relu'))
 
     model.add(layers.Flatten())
     model.add(layers.Dense(128, activation='relu'))
@@ -143,7 +165,7 @@ def main():
 
     # model = init_model_example()
     # model = init_model_1()
-    model = init_model_3()
+    model = init_model_1()
     # model = init_model_4()
     # model = init_model_5()
 
