@@ -1,7 +1,7 @@
 model 1
-test loss =  1.5547723289489745 / log:0.44132912266041413
-test accuracy =  0.9062
+test loss =  1.5537729433059693
+test accuracy =  0.907
 
-model 3
-test loss =  1.5653207530975342 / log:0.44809075704783574
-test accuracy =  0.8956
+model 5
+test loss =  1.5677348550796508
+test accuracy =  0.8929
