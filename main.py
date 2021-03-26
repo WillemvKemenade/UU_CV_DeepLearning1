@@ -6,6 +6,8 @@ from sklearn.model_selection import KFold
 import os
 import functools
 import keras
+import pandas as pd
+import seaborn as sns
 
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
@@ -228,6 +230,7 @@ def testing_stage():
     history = get_history(model, test_images, test_labels, train_images, train_labels)
     plot_testing_loss(history)
     evaluate_test_data(model, test_images, test_labels)
+    confusion_matrix(model, test_images, test_labels)
     model.save('Test_Models\\model_1')
 
     model = init_model_5(0, False)
@@ -235,6 +238,21 @@ def testing_stage():
     plot_testing_loss(history)
     evaluate_test_data(model, test_images, test_labels)
     model.save('Test_Models\\model_5')
+
+def confusion_matrix(model, test_images, test_labels):
+    y_pred = model.predict_classes(test_images)
+    con_mat = tf.math.confusion_matrix(labels=test_labels, predictions=y_pred).numpy()
+    con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
+
+    classes = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
+    con_mat_df = pd.DataFrame(con_mat_norm, index=classes, columns=classes)
+
+    figure = plt.figure(figsize=(8, 8))
+    sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.show()
 
 def KFold_Model(model, model_number, train_images, train_labels):
     folds = 5
@@ -321,9 +339,10 @@ def evaluate_test_data(model, test_images, test_labels):
     print("test accuracy = ", test_acc)
 
 def main():
-    training_stage()
+    # training_stage()
     testing_stage()
-    KFold_Stage()
+    # KFold_Stage()
+    i = 0
 
 if __name__ == "__main__":
     main()
