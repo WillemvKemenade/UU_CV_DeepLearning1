@@ -338,10 +338,9 @@ def evaluate_test_data(model, test_images, test_labels):
     print("test accuracy = ", test_acc)
 
 def main():
-    # training_stage()
+    training_stage()
     testing_stage()
-    # KFold_Stage()
-    i = 0
+    KFold_Stage()
 
 if __name__ == "__main__":
     main()
