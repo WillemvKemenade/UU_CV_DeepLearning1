@@ -241,15 +241,14 @@ def testing_stage():
 
 def confusion_matrix(model, test_images, test_labels):
     y_pred = model.predict_classes(test_images)
-    con_mat = tf.math.confusion_matrix(labels=test_labels, predictions=y_pred).numpy()
-    con_mat_norm = np.around(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], decimals=2)
+    confusion_matrix_model = tf.math.confusion_matrix(labels=test_labels, predictions=y_pred).numpy()
+    confusion_normalization = np.around(confusion_matrix_model.astype('float') / confusion_matrix_model.sum(axis=1)[:, np.newaxis], decimals=2)
 
     classes = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
-    con_mat_df = pd.DataFrame(con_mat_norm, index=classes, columns=classes)
+    confusion_dataframe = pd.DataFrame(confusion_normalization, index=classes, columns=classes)
 
-    figure = plt.figure(figsize=(8, 8))
-    sns.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
-    plt.tight_layout()
+    plt.figure(figsize=(10, 10))
+    sns.heatmap(confusion_dataframe, annot=True, cmap=plt.cm.Blues)
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.show()
