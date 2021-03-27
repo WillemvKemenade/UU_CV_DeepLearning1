@@ -41,7 +41,7 @@ def get_datasets(name):
     print("Dataset was not found")
     exit(1)
 
-def init_model_1(verbose=0, training=True):
+def init_model_1(verbose=0):
     model = models.Sequential()
     model.add(layers.Conv2D(filters=64, kernel_size=(3,3), activation='relu', input_shape=(28, 28, 1)))
     model.add(layers.Conv2D(filters=32, kernel_size=(3,3), activation='relu'))
@@ -52,16 +52,9 @@ def init_model_1(verbose=0, training=True):
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(10, activation='softmax'))
 
-    if training == True:
-        top1_acc = functools.partial(keras.metrics.top_k_categorical_accuracy, k=1)
-        top1_acc.__name__ = 'top1_acc'
-        model.compile(optimizer='adam',
-                      loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                      metrics=['accuracy', 'top_k_categorical_accuracy', top1_acc])
-    else:
-        model.compile(optimizer='adam',
-                      loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                      metrics=['accuracy'])
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
 
     if verbose == 1:
         model.summary()
@@ -79,11 +72,9 @@ def init_model_2(verbose=0):
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(10, activation='softmax'))
 
-    top1_acc = functools.partial(keras.metrics.top_k_categorical_accuracy, k=1)
-    top1_acc.__name__ = 'top1_acc'
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                  metrics=['accuracy', 'top_k_categorical_accuracy', top1_acc])
+                  metrics=['accuracy'])
     if verbose == 1:
         model.summary()
     return model
@@ -101,11 +92,9 @@ def init_model_3(verbose=0):
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(10, activation='softmax'))
 
-    top1_acc = functools.partial(keras.metrics.top_k_categorical_accuracy, k=1)
-    top1_acc.__name__ = 'top1_acc'
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                  metrics=['accuracy', 'top_k_categorical_accuracy', top1_acc])
+                  metrics=['accuracy'])
     if verbose == 1:
         model.summary()
     return model
@@ -126,16 +115,14 @@ def init_model_4(verbose=0):
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(10, activation='softmax'))
 
-    top1_acc = functools.partial(keras.metrics.top_k_categorical_accuracy, k=1)
-    top1_acc.__name__ = 'top1_acc'
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                  metrics=['accuracy', 'top_k_categorical_accuracy', top1_acc])
+                  metrics=['accuracy'])
     if verbose == 1:
         model.summary()
     return model
 
-def init_model_5(verbose=0, training=True):
+def init_model_5(verbose=0):
     model = models.Sequential()
     model.add(layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)))
     model.add(layers.Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
@@ -148,16 +135,9 @@ def init_model_5(verbose=0, training=True):
     model.add(layers.Dropout(0.3))
     model.add(layers.Dense(10, activation='softmax'))
 
-    if training == True:
-        top1_acc = functools.partial(keras.metrics.top_k_categorical_accuracy, k=1)
-        top1_acc.__name__ = 'top1_acc'
-        model.compile(optimizer='adam',
-                      loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                      metrics=['accuracy', 'top_k_categorical_accuracy', top1_acc])
-    else:
-        model.compile(optimizer='adam',
-                      loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                      metrics=['accuracy'])
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
     if verbose == 1:
         model.summary()
     return model
@@ -167,7 +147,7 @@ def training_stage():
     (train_images, train_labels) = data[0]
     (valid_images, valid_labels) = data[1]
 
-    model = init_model_1(0, True)
+    model = init_model_1()
     history = get_history(model, valid_images, valid_labels, train_images, train_labels)
     plot_training_loss(history)
     model.save('Training_Models\\model_1')
@@ -187,7 +167,7 @@ def training_stage():
     plot_training_loss(history)
     model.save('Training_Models\\model_4')
 
-    model = init_model_5(0, True)
+    model = init_model_5()
     history = get_history(model, valid_images, valid_labels, train_images, train_labels)
     plot_training_loss(history)
     model.save('Training_Models\\model_5')
@@ -196,7 +176,7 @@ def KFold_Stage():
     data = get_datasets("fashion_mnist_training")
     (train_images, train_labels) = data[0]
 
-    model = init_model_1(0, True)
+    model = init_model_1()
     LOSS, VAL_LOSS = KFold_Model(model, 1, train_images, train_labels)
     AVERAGE_LOSS, AVERAGE_VAL_LOSS = Get_Average_Loss(LOSS, VAL_LOSS)
     plot_training_loss(AVERAGE_LOSS, AVERAGE_VAL_LOSS, 1)
@@ -216,7 +196,7 @@ def KFold_Stage():
     AVERAGE_LOSS, AVERAGE_VAL_LOSS = Get_Average_Loss(LOSS, VAL_LOSS)
     plot_training_loss(AVERAGE_LOSS, AVERAGE_VAL_LOSS, 4)
 
-    model = init_model_5(0, True)
+    model = init_model_5()
     LOSS, VAL_LOSS = KFold_Model(model, 5, train_images, train_labels)
     AVERAGE_LOSS, AVERAGE_VAL_LOSS = Get_Average_Loss(LOSS, VAL_LOSS)
     plot_training_loss(AVERAGE_LOSS, AVERAGE_VAL_LOSS, 5)
@@ -226,14 +206,14 @@ def testing_stage():
     (train_images, train_labels) = data[0]
     (test_images, test_labels) = data[1]
 
-    model = init_model_1(0, False)
+    model = init_model_1()
     history = get_history(model, test_images, test_labels, train_images, train_labels)
     plot_testing_loss(history)
     evaluate_test_data(model, test_images, test_labels)
     confusion_matrix(model, test_images, test_labels)
     model.save('Test_Models\\model_1')
 
-    model = init_model_5(0, False)
+    model = init_model_5()
     history = get_history(model, test_images, test_labels, train_images, train_labels)
     plot_testing_loss(history)
     evaluate_test_data(model, test_images, test_labels)
@@ -339,7 +319,7 @@ def evaluate_test_data(model, test_images, test_labels):
 
 def main():
     training_stage()
-    testing_stage()
+    # testing_stage()
     KFold_Stage()
 
 if __name__ == "__main__":
